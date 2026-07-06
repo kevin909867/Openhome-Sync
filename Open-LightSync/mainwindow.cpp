@@ -675,6 +675,13 @@ void MainWindow::runCrazyMode(const QStringList &entities, const QImage &image, 
 void MainWindow::sendTurnOn(const QString &entityId, const QColor &color, double transitionSeconds)
 {
     if (inputUrl->text().trimmed().isEmpty() || inputToken->text().trimmed().isEmpty() || entityId.trimmed().isEmpty()) return;
+    const QColor previousColor = lastSentColors.value(entityId);
+    if (lastSentColors.contains(entityId) && previousColor == color) {
+        return;
+    }
+
+    lastSentColors.insert(entityId, color);
+
     QJsonObject payload;
     payload.insert("entity_id", entityId);
     payload.insert("rgb_color", QJsonArray{color.red(), color.green(), color.blue()});
@@ -694,6 +701,7 @@ void MainWindow::turnOff()
     }
     payload.insert("entity_id", entityArray);
     postJson(QUrl(inputUrl->text().trimmed() + "/api/services/light/turn_off"), payload);
+    lastSentColors.clear();
 }
 
 void MainWindow::postJson(const QUrl &url, const QJsonObject &payload)

@@ -6,6 +6,7 @@
 #include <QImage>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QHash>
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QPoint>
@@ -126,6 +127,7 @@ private:
 
     QVector<DynamicRow> dynamicRows;
     QVector<QScreen *> knownScreens;
+    QHash<QString, QColor> lastSentColors;
 
     QTimer timer;
     QNetworkAccessManager *networkManager = nullptr;
