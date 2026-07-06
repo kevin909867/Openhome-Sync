@@ -11,7 +11,6 @@
 #include <QMainWindow>
 #include <QPoint>
 #include <QPushButton>
-#include <QCloseEvent>
 #include <QStringList>
 #include <QUrl>
 #include <QTimer>
@@ -55,8 +54,6 @@ private slots:
     void onMonitorChanged(int index);
 
 private:
-    void closeEvent(QCloseEvent *event) override;
-
     struct DynamicRow {
         QWidget *rowWidget = nullptr;
         QLineEdit *lineEdit = nullptr;
@@ -88,10 +85,6 @@ private:
     void sendTurnOn(const QString &entityId, const QColor &color, double transitionSeconds);
     void turnOff();
     void postJson(const QUrl &url, const QJsonObject &payload);
-    QJsonObject getEntityState(const QString &entityId) const;
-    void snapshotPreviousLightStates(const QStringList &entities);
-    void restorePreviousLightStates();
-    void restoreEntityState(const QString &entityId, const QJsonObject &state);
 
     void loadOnStartup();
     void applyLoadedData(const QJsonObject &obj);
@@ -135,7 +128,6 @@ private:
     QVector<DynamicRow> dynamicRows;
     QVector<QScreen *> knownScreens;
     QHash<QString, QColor> lastSentColors;
-    QHash<QString, QJsonObject> previousLightStates;
 
     QTimer timer;
     QNetworkAccessManager *networkManager = nullptr;

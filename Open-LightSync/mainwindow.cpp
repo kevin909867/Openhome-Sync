@@ -21,7 +21,6 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QEventLoop>
 #include <QMouseEvent>
 #include <QMoveEvent>
 #include <QPaintEvent>
@@ -714,99 +713,6 @@ void MainWindow::postJson(const QUrl &url, const QJsonObject &payload)
     connect(reply, &QNetworkReply::finished, reply, &QObject::deleteLater);
 }
 
-QJsonObject MainWindow::getEntityState(const QString &entityId) const
-{
-    if (inputUrl->text().trimmed().isEmpty() || inputToken->text().trimmed().isEmpty() || entityId.trimmed().isEmpty()) {
-        return {};
-    }
-
-    QUrl url(inputUrl->text().trimmed() + "/api/states/" + QString::fromUtf8(QUrl::toPercentEncoding(entityId)));
-    QNetworkRequest req(url);
-    req.setRawHeader("Authorization", QByteArray("Bearer ") + inputToken->text().trimmed().toUtf8());
-
-    QNetworkReply *reply = networkManager->get(req);
-    QEventLoop loop;
-    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-    loop.exec();
-
-    const QByteArray body = reply->readAll();
-    const QJsonDocument doc = QJsonDocument::fromJson(body);
-    reply->deleteLater();
-    return doc.object();
-}
-
-void MainWindow::snapshotPreviousLightStates(const QStringList &entities)
-{
-    previousLightStates.clear();
-    for (const QString &entityId : entities) {
-        const QJsonObject state = getEntityState(entityId);
-        if (!state.isEmpty()) {
-            previousLightStates.insert(entityId, state);
-        }
-    }
-}
-
-void MainWindow::restoreEntityState(const QString &entityId, const QJsonObject &state)
-{
-    if (state.isEmpty()) {
-        return;
-    }
-
-    const QString currentState = state.value("state").toString();
-    if (currentState == "off") {
-        QJsonObject payload;
-        payload.insert("entity_id", entityId);
-        QNetworkRequest req(QUrl(inputUrl->text().trimmed() + "/api/services/light/turn_off"));
-        req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        req.setRawHeader("Authorization", QByteArray("Bearer ") + inputToken->text().trimmed().toUtf8());
-        QNetworkReply *reply = networkManager->post(req, QJsonDocument(payload).toJson(QJsonDocument::Compact));
-        QEventLoop loop;
-        connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-        loop.exec();
-        reply->deleteLater();
-        return;
-    }
-
-    const QJsonObject attrs = state.value("attributes").toObject();
-    QJsonObject payload;
-    payload.insert("entity_id", entityId);
-
-    if (attrs.contains("brightness")) {
-        payload.insert("brightness", attrs.value("brightness").toInt());
-    }
-
-    if (attrs.contains("rgb_color")) {
-        payload.insert("rgb_color", attrs.value("rgb_color"));
-    } else if (attrs.contains("color_temp_kelvin")) {
-        payload.insert("color_temp_kelvin", attrs.value("color_temp_kelvin"));
-    } else if (attrs.contains("hs_color")) {
-        payload.insert("hs_color", attrs.value("hs_color"));
-    } else if (attrs.contains("xy_color")) {
-        payload.insert("xy_color", attrs.value("xy_color"));
-    }
-
-    if (attrs.contains("transition")) {
-        payload.insert("transition", attrs.value("transition"));
-    }
-
-    QNetworkRequest req(QUrl(inputUrl->text().trimmed() + "/api/services/light/turn_on"));
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    req.setRawHeader("Authorization", QByteArray("Bearer ") + inputToken->text().trimmed().toUtf8());
-    QNetworkReply *reply = networkManager->post(req, QJsonDocument(payload).toJson(QJsonDocument::Compact));
-    QEventLoop loop;
-    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-    loop.exec();
-    reply->deleteLater();
-}
-
-void MainWindow::restorePreviousLightStates()
-{
-    for (auto it = previousLightStates.constBegin(); it != previousLightStates.constEnd(); ++it) {
-        restoreEntityState(it.key(), it.value());
-    }
-    previousLightStates.clear();
-}
-
 void MainWindow::updateLight()
 {
     const QStringList entities = collectAllInputs();
@@ -815,9 +721,6 @@ void MainWindow::updateLight()
     if (!screen) screen = QApplication::primaryScreen();
 
     if (toggleButton->status) {
-        if (!lampStatus) {
-            snapshotPreviousLightStates(entities);
-        }
         lampStatus = true;
         if (modeBtnScreen->isChecked()) runScreenMode(entities, image, screen);
         else if (modeBtnAverage->isChecked()) runAverageMode(entities, image, screen);
@@ -832,19 +735,6 @@ void MainWindow::updateLight()
     } else if (isInAutostart()) {
         removeSelfFromAutostart();
     }
-}
-
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    timer.stop();
-    if (lampStatus || toggleButton->status) {
-        toggleButton->setChecked(false);
-        toggleButton->status = false;
-        lampStatus = false;
-        restorePreviousLightStates();
-    }
-
-    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::saveClick()
