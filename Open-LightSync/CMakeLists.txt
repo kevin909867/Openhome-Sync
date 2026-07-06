@@ -49,6 +49,14 @@ target_link_libraries(Open-LightSync PRIVATE
     Qt${QT_VERSION_MAJOR}::Network
 )
 
+add_custom_command(TARGET Open-LightSync POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/dist"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:Open-LightSync>"
+            "${CMAKE_BINARY_DIR}/dist/"
+    COMMENT "Copying Open-LightSync binary to dist folder"
+)
+
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.

@@ -1,0 +1,7 @@
+# Open-LightSync Build Instructions
+
+From the `Open-LightSync` folder, run this single PowerShell one-liner to **clean, configure, build, deploy runtime DLLs, and run**:
+
+```powershell
+Get-Process Open-LightSync -ErrorAction SilentlyContinue | Stop-Process -Force; Remove-Item -Recurse -Force .\build-llvmqt -ErrorAction SilentlyContinue; & "C:\Qt\Tools\CMake_64\bin\cmake.exe" -S . -B build-llvmqt -G Ninja -DCMAKE_CXX_COMPILER="C:/Qt/Tools/llvm-mingw1706_64/bin/clang++.exe" -DCMAKE_PREFIX_PATH="C:/Qt/6.8.3/llvm-mingw_64" -DCMAKE_MAKE_PROGRAM="C:/Qt/Tools/Ninja/ninja.exe"; & "C:\Qt\Tools\CMake_64\bin\cmake.exe" --build build-llvmqt; New-Item -ItemType Directory -Force .\build-llvmqt\platforms | Out-Null; Copy-Item "C:\Qt\6.8.3\llvm-mingw_64\bin\Qt6Core.dll" .\build-llvmqt\ -Force; Copy-Item "C:\Qt\6.8.3\llvm-mingw_64\bin\Qt6Gui.dll" .\build-llvmqt\ -Force; Copy-Item "C:\Qt\6.8.3\llvm-mingw_64\bin\Qt6Widgets.dll" .\build-llvmqt\ -Force; Copy-Item "C:\Qt\6.8.3\llvm-mingw_64\bin\Qt6Network.dll" .\build-llvmqt\ -Force; Copy-Item "C:\Qt\6.8.3\llvm-mingw_64\plugins\platforms\qwindows.dll" .\build-llvmqt\platforms\ -Force; Copy-Item "C:\Qt\Tools\llvm-mingw1706_64\bin\libc++.dll" .\build-llvmqt\ -Force; Copy-Item "C:\Qt\Tools\llvm-mingw1706_64\bin\libunwind.dll" .\build-llvmqt\ -Force; if (Test-Path "C:\Qt\Tools\llvm-mingw1706_64\bin\libwinpthread-1.dll") { Copy-Item "C:\Qt\Tools\llvm-mingw1706_64\bin\libwinpthread-1.dll" .\build-llvmqt\ -Force }; & ".\build-llvmqt\Open-LightSync.exe"
+```

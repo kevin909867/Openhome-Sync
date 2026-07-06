@@ -1,0 +1,9 @@
+# ninja log v6
+34	895	8050388483585359	Open-LightSync_autogen/timestamp	d3bf5452b0f02d66
+34	895	8050388483585359	Open-LightSync_autogen/mocs_compilation.cpp	d3bf5452b0f02d66
+34	895	8050388483585359	C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/Open-LightSync_autogen/timestamp	d3bf5452b0f02d66
+34	895	8050388483585359	C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/Open-LightSync_autogen/mocs_compilation.cpp	d3bf5452b0f02d66
+903	2720	8050388484559192	CMakeFiles/Open-LightSync.dir/Open-LightSync_autogen/mocs_compilation.cpp.obj	978b68044252af2b
+908	2910	8050388484609202	CMakeFiles/Open-LightSync.dir/main.cpp.obj	36a1d32a31e6e6d
+915	3424	8050388484684387	CMakeFiles/Open-LightSync.dir/mainwindow.cpp.obj	7867ac3fce36a235
+3425	3756	8050388509775664	Open-LightSync.exe	71414bfd284636c1

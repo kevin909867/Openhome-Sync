@@ -1,0 +1,9 @@
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/Open-LightSync.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/edit_cache.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/rebuild_cache.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/list_install_components.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/install.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/install/local.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/install/strip.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/Open-LightSync_autogen_timestamp_deps.dir
+C:/Users/Kevin/Documents/GitHub/Openhome-Sync/Open-LightSync/build-llvmqt/CMakeFiles/Open-LightSync_autogen.dir
