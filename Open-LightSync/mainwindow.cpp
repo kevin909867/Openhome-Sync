@@ -389,7 +389,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupInterface()
 {
-    setWindowTitle("Openhome Sync");
+    setWindowTitle("Open-LightSync");
     setWindowIcon(QIcon("icon.ico"));
     setMinimumSize(900, 450);
     setStyleSheet("background-color: #131515;");

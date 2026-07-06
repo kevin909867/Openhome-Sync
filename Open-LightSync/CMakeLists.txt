@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(Open-LightSync VERSION 0.1 LANGUAGES CXX)
 
+configure_file(${CMAKE_SOURCE_DIR}/../legacy/icon.ico ${CMAKE_BINARY_DIR}/icon.ico COPYONLY)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
