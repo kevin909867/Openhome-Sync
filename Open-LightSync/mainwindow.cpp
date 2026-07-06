@@ -460,6 +460,10 @@ void MainWindow::setupInterface()
     }
     leftLayout->addWidget(autoGroup);
 
+    temperatureFallbackBox = new QCheckBox("Temperature fallback (may only work on some lights)");
+    temperatureFallbackBox->setStyleSheet("QCheckBox::indicator { background: transparent; border: none; width: 0px; } QCheckBox { padding: 15px; font-size: 14px; border-radius: 4px; background-color: #403d39; color: #ffffff; } QCheckBox:checked { border: 1px solid #eb5e28; background-color: #00a67d; }");
+    leftLayout->addWidget(temperatureFallbackBox);
+
     auto *topLayout2 = new QHBoxLayout();
     saveButton = new QPushButton("SAVE");
     loadButton = new QPushButton("LOAD");
@@ -683,6 +687,31 @@ void MainWindow::sendTurnOn(const QString &entityId, const QColor &color, double
 
     lastSentColors.insert(entityId, color);
 
+    const int maxChannel = qMax(color.red(), qMax(color.green(), color.blue()));
+    const int minChannel = qMin(color.red(), qMin(color.green(), color.blue()));
+    const int channelSpread = maxChannel - minChannel;
+    const bool useTemperatureFallback = temperatureFallbackBox && temperatureFallbackBox->isChecked();
+
+    if (useTemperatureFallback) {
+        if (maxChannel <= 6) {
+            QJsonObject payload;
+            payload.insert("entity_id", entityId);
+            postJson(QUrl(inputUrl->text().trimmed() + "/api/services/light/turn_off"), payload);
+            return;
+        }
+
+        if (channelSpread <= 18) {
+            const int brightness = qBound(12, maxChannel / 3, 80);
+            QJsonObject payload;
+            payload.insert("entity_id", entityId);
+            payload.insert("color_temp_kelvin", 3500);
+            payload.insert("brightness", brightness);
+            payload.insert("transition", transitionSeconds);
+            postJson(QUrl(inputUrl->text().trimmed() + "/api/services/light/turn_on"), payload);
+            return;
+        }
+    }
+
     QJsonObject payload;
     payload.insert("entity_id", entityId);
     payload.insert("rgb_color", QJsonArray{color.red(), color.green(), color.blue()});
@@ -884,6 +913,7 @@ QJsonObject MainWindow::buildSaveObject() const
     credentials.append(autostartBox->isChecked());
     credentials.append(minimizedBox->isChecked());
     credentials.append(startLampBox->isChecked());
+    credentials.append(temperatureFallbackBox->isChecked());
     obj.insert("credentials", credentials);
     obj.insert("selected_monitor", monitorCombo->currentData().toString());
     obj.insert("lamps", logoCanvas ? logoCanvas->saveLampPositions(collectAllInputs()) : QJsonObject());
@@ -899,6 +929,9 @@ void MainWindow::applyLoadedData(const QJsonObject &obj)
         autostartBox->setChecked(credentials.at(2).toBool());
         minimizedBox->setChecked(credentials.at(3).toBool());
         startLampBox->setChecked(credentials.at(4).toBool());
+        if (credentials.size() >= 6) {
+            temperatureFallbackBox->setChecked(credentials.at(5).toBool());
+        }
         if (minimizedBox->isChecked()) showMinimized();
         if (startLampBox->isChecked()) {
             toggleButton->setChecked(true);

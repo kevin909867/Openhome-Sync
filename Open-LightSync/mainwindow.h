@@ -124,6 +124,7 @@ private:
     QCheckBox *autostartBox = nullptr;
     QCheckBox *minimizedBox = nullptr;
     QCheckBox *startLampBox = nullptr;
+    QCheckBox *temperatureFallbackBox = nullptr;
 
     QPushButton *saveButton = nullptr;
     QPushButton *loadButton = nullptr;
