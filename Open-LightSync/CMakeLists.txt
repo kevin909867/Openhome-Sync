@@ -15,8 +15,18 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Network)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
+    mainwindow_ui.cpp
+    mainwindow_modes.cpp
+    mainwindow_network.cpp
+    mainwindow_persistence.cpp
         mainwindow.h
         mainwindow.ui
+    widgets/movablelamp.cpp
+    widgets/movablelamp.h
+    widgets/logocanvas.cpp
+    widgets/logocanvas.h
+    widgets/togglebutton.cpp
+    widgets/togglebutton.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
